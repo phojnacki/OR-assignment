@@ -15,7 +15,6 @@ public static class ProductCreatedHandler
     [Transactional]
     public static async Task HandleAsync(
         ProductCreatedEvent @event,
-        InventoryDbContext db,
         IKnownProductRepository knownProductRepository,
         ILogger logger,
         CancellationToken ct)
