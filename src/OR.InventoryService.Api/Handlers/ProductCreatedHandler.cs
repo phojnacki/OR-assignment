@@ -24,8 +24,6 @@ public static class ProductCreatedHandler
 
         await knownProductRepository.AddAsync(@event.ProductId, ct);
 
-        await db.SaveChangesAsync(ct);
-
         logger.LogInformation("Product {ProductId} is currently in known products read model", @event.ProductId);
     }
 }

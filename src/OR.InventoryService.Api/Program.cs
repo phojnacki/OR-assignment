@@ -115,7 +115,7 @@ builder.Host.UseWolverine(opts =>
     opts.UseFluentValidation();
 
     opts.Policies.AddMiddleware(typeof(WolverineLoggingMiddleware));
-
+    opts.Policies.AutoApplyTransactions();
 });
 
 // OpenTelemetry
