@@ -1,0 +1,18 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/OR.InventoryService.Api/OR.InventoryService.Api.csproj" />
+    <Project Path="src/OR.InventoryService.Application/OR.InventoryService.Application.csproj" />
+    <Project Path="src/OR.InventoryService.Domain/OR.InventoryService.Domain.csproj" />
+    <Project Path="src/OR.InventoryService.Infrastructure/OR.InventoryService.Infrastructure.csproj" />
+    <Project Path="src/OR.ProductService.Api/OR.ProductService.Api.csproj" />
+    <Project Path="src/OR.ProductService.Application/OR.ProductService.Application.csproj" />
+    <Project Path="src/OR.ProductService.Domain/OR.ProductService.Domain.csproj" />
+    <Project Path="src/OR.ProductService.Infrastructure/OR.ProductService.Infrastructure.csproj" />
+    <Project Path="src/OR.Shared/OR.Shared.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/OR.EndToEnd.Tests/OR.EndToEnd.Tests.csproj" />
+    <Project Path="tests/OR.InventoryService.Tests/OR.InventoryService.Tests.csproj" />
+    <Project Path="tests/OR.ProductService.Tests/OR.ProductService.Tests.csproj" />
+  </Folder>
+</Solution>

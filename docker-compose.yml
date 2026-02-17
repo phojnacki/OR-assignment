@@ -1,0 +1,104 @@
+services:
+  product-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: productdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      # POSTGRES_INITDB_ARGS: "-c log_statement=all -c log_connections=on -c log_disconnections=on"
+    ports:
+      - "5433:5432"
+    volumes:
+      - product-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  inventory-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: inventorydb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      # POSTGRES_INITDB_ARGS: "-c log_statement=all -c log_connections=on -c log_disconnections=on"
+    ports:
+      - "5434:5432"
+    volumes:
+      - inventory-db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
+  grafana:
+    image: grafana/otel-lgtm:latest
+    ports:
+      - "3000:3000"
+      - "4317:4317"
+      - "4318:4318"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+
+  product-service:
+    build:
+      context: .
+      dockerfile: src/OR.ProductService.Api/Dockerfile
+    ports:
+      - "5001:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: "Host=product-db;Port=5432;Database=productdb;Username=postgres;Password=postgres"
+      RabbitMQ__Uri: "amqp://guest:guest@rabbitmq:5672"
+      Jwt__Secret: "ThisIsADevelopmentSecretKeyThatIsLongEnoughForHmacSha256!!"
+      Jwt__Issuer: "OR.AuthService"
+      Jwt__Audience: "OR.Services"
+      OpenTelemetry__OtlpEndpoint: "http://grafana:4317"
+    depends_on:
+      product-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  inventory-service:
+    build:
+      context: .
+      dockerfile: src/OR.InventoryService.Api/Dockerfile
+    ports:
+      - "5002:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: "Host=inventory-db;Port=5432;Database=inventorydb;Username=postgres;Password=postgres"
+      RabbitMQ__Uri: "amqp://guest:guest@rabbitmq:5672"
+      Jwt__Secret: "ThisIsADevelopmentSecretKeyThatIsLongEnoughForHmacSha256!!"
+      Jwt__Issuer: "OR.AuthService"
+      Jwt__Audience: "OR.Services"
+      ProductService__BaseUrl: "http://product-service:8080"
+      OpenTelemetry__OtlpEndpoint: "http://grafana:4317"
+    depends_on:
+      inventory-db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      product-service:
+        condition: service_started
+
+volumes:
+  product-db-data:
+  inventory-db-data:
