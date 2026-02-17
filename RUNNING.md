@@ -16,6 +16,7 @@
 
 # Running All Tests
 
+* assumes .NET 10 is installed on the machine
 * run `dotnet test` in the main directory (with **slnx** file)
 
 # ⚠️ TODOs: 

@@ -41,7 +41,7 @@ public class ProductsController(
     }
 
     [HttpGet("{id:guid}")]
-    [Authorize(Roles = "read")]
+    // [Authorize(Roles = "read")] // connection from InventoryService has no auth for now, so skipping auth here. TODO PH.
     public async Task<IActionResult> GetById(Guid id, CancellationToken ct)
     {
         var productDto = await _productService.GetProductByIdAsync(id, ct);
