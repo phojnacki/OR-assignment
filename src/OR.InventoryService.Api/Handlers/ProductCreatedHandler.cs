@@ -1,4 +1,5 @@
 using OR.InventoryService.Application.Interfaces;
+using OR.InventoryService.Infrastructure.Persistence;
 using OR.Shared.Events;
 using Wolverine.Attributes;
 
@@ -14,6 +15,7 @@ public static class ProductCreatedHandler
     [Transactional]
     public static async Task HandleAsync(
         ProductCreatedEvent @event,
+        InventoryDbContext db,
         IKnownProductRepository knownProductRepository,
         ILogger logger,
         CancellationToken ct)
@@ -21,6 +23,8 @@ public static class ProductCreatedHandler
         logger.LogInformation("Received ProductCreatedEvent for product {ProductId}", @event.ProductId);
 
         await knownProductRepository.AddAsync(@event.ProductId, ct);
+
+        await db.SaveChangesAsync(ct);
 
         logger.LogInformation("Product {ProductId} is currently in known products read model", @event.ProductId);
     }

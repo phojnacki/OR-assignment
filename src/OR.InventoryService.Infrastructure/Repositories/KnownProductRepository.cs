@@ -16,11 +16,6 @@ public class KnownProductRepository(InventoryDbContext db) : IKnownProductReposi
 
     public async Task AddAsync(Guid productId, CancellationToken ct)
     {
-        if (!await ExistsAsync(productId, ct))
-        {
-            _db.KnownProducts.Add(new KnownProduct(productId, DateTime.UtcNow));
-            // Note: SaveChangesAsync is not called here when used in a transactional context
-            // The transaction is managed by the caller (e.g., Wolverine's [Transactional] attribute)
-        }
+         _db.KnownProducts.Add(new KnownProduct(productId, DateTime.UtcNow));
     }
 }
